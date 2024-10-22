@@ -1,7 +1,12 @@
 import "./App.css";
+import Sidebar from "./components/Sidebar";
 
 function App() {
-  return <h1 className="text-red-700">olá</h1>;
+  return (
+    <Sidebar>
+      <h1>hello</h1>
+    </Sidebar>
+  );
 }
 
 export default App;
