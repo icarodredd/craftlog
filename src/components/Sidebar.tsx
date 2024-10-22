@@ -3,8 +3,8 @@ import { Button } from "@/components/ui/button";
 
 export default function Sidebar({ setPage }: { setPage: React.Dispatch<React.SetStateAction<string>> }) {
   return (
-    <section className="h-screen w-min border-r border-gray-200 font-inter">
-      <div className="flex justify-between items-center gap-4 p-4">
+    <section className="h-screen w-60 border-r border-gray-800 font-inter">
+      <div className="flex justify-center items-center gap-4 p-4">
         <Avatar>
           <AvatarImage src="https://github.com/shadcn.png" />
           <AvatarFallback>CN</AvatarFallback>
