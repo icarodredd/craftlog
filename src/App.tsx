@@ -1,7 +1,7 @@
-import Sidebar from "./components/Sidebar";
+import Layout from "./components/Layout";
 
 function App() {
-  return <Sidebar />;
+  return <Layout />;
 }
 
 export default App;
