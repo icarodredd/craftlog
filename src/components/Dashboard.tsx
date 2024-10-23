@@ -1,19 +1,29 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import dotenv from "dotenv";
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
+import AddTask from "./AddTask";
+
+dotenv.config();
+
+const firebaseConfig = {
+  apiKey: process.env.APIKEY,
+  authDomain: process.env.AUTHDOMAIN,
+  databaseURL: process.env.DATABASEURL,
+  projectId: process.env.PROJECTID,
+  storageBucket: process.env.STORAGE_BUCKET,
+  messagingSenderId: process.env.MESSAGING_SENDER_ID,
+  appId: process.env.APP_ID,
+  measurementId: process.env.MEASUREMENT_ID,
+};
+
+const app = initializeApp(firebaseConfig);
 
 export default function Dashboard() {
+  const db = getFirestore(app);
+
   return (
     <section className="p-4 font-inter w-full">
       <Select>
@@ -28,48 +38,7 @@ export default function Dashboard() {
       </Select>
       <div className="flex justify-between items-center mt-10">
         <h1 className="font-bold text-2xl">Hello, member of Nexa Team!</h1>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button variant="outline">Add Task</Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Edit profile</DialogTitle>
-              <DialogDescription>Make changes to your profile here. Click save when you're done.</DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label
-                  htmlFor="name"
-                  className="text-right"
-                >
-                  Name
-                </Label>
-                <Input
-                  id="name"
-                  value="Pedro Duarte"
-                  className="col-span-3"
-                />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label
-                  htmlFor="username"
-                  className="text-right"
-                >
-                  Username
-                </Label>
-                <Input
-                  id="username"
-                  value="@peduarte"
-                  className="col-span-3"
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button type="submit">Save changes</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <AddTask />
       </div>
       <p className="mt-4 mb-4 text-sm">Tasks of the project:</p>
       <div className="grid grid-cols-4 gap-4 auto-rows-auto">
