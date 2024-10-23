@@ -4,7 +4,7 @@ import { HomeIcon, ArchiveIcon } from "@radix-ui/react-icons";
 
 export default function Sidebar({ setPage }: { setPage: React.Dispatch<React.SetStateAction<string>> }) {
   return (
-    <section className="h-screen w-60 border-r border-gray-800 font-inter">
+    <section className="h-screen w-60 font-inter">
       <div className="flex justify-center items-center gap-4 p-4">
         <Avatar>
           <AvatarImage src="https://github.com/shadcn.png" />

@@ -1,9 +1,7 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup } from "@/components/ui/select";
 import { initializeApp } from "firebase/app";
-import { collection, getDocs, getFirestore } from "firebase/firestore";
+import { addDoc, collection, getDocs, getFirestore } from "firebase/firestore";
 import Task from "./Task";
-import { z } from "zod";
-import { Form } from "@/components/ui/form";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,12 +15,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-
-const formSchema = z.object({
-  username: z.string().min(2).max(50),
-});
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_APIKEY,
@@ -49,17 +41,14 @@ export default function Dashboard() {
   const [tasks, setTasks] = useState<TaskData[]>();
   const [addTask, setAddTask] = useState<TaskData>();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      username: "",
-    },
-  });
-
   const db = getFirestore(app);
 
-  const handleSubmitTask = () => {
-    console.log(addTask);
+  const handleSubmitTask = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.preventDefault();
+    await addDoc(collection(db, "tasks"), {
+      ...addTask,
+      completed: false,
+    });
   };
 
   useEffect(() => {
@@ -88,7 +77,7 @@ export default function Dashboard() {
         <SelectContent>
           <SelectItem value="light">Nexa Team</SelectItem>
           <SelectItem value="dark">Another Team</SelectItem>
-          <SelectItem value="dark">Another Team</SelectItem>
+          <SelectItem value="orange">Another Team</SelectItem>
         </SelectContent>
       </Select>
       <div className="flex justify-between items-center mt-10">
@@ -98,62 +87,58 @@ export default function Dashboard() {
             <Button variant="outline">Add Task</Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
-            <Form {...form}>
-              <form className="space-y-8">
-                <DialogHeader>
-                  <DialogTitle>Add Task</DialogTitle>
-                  <DialogDescription>Add task here. Click submit when you're done.</DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label className="text-right">Title</Label>
-                    <Input
-                      onChange={(e) => setAddTask({ ...addTask, title: e.target.value })}
-                      required
-                      id="Title"
-                      placeholder="Task Title"
-                      className="col-span-3"
-                    />
-                  </div>
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label className="text-right">Description</Label>
-                    <Input
-                      onChange={(e) => setAddTask({ ...addTask, description: e.target.value })}
-                      required
-                      id="Description"
-                      placeholder="Task Description"
-                      className="col-span-3"
-                    />
-                  </div>
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label className="text-right">Priority</Label>
-                    <Select
-                      required
-                      onValueChange={(value) => setAddTask({ ...addTask, priority: value })}
-                    >
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Priority" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectItem value="Normal">Normal</SelectItem>
-                          <SelectItem value="Medium">Medium</SelectItem>
-                          <SelectItem value="High">High</SelectItem>
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                <DialogFooter>
-                  <Button onClick={() => handleSubmitTask()}>Submit</Button>
-                </DialogFooter>
-              </form>
-            </Form>
+            <DialogHeader>
+              <DialogTitle>Add Task</DialogTitle>
+              <DialogDescription>Add task here. Click submit when you're done.</DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label className="text-right">Title</Label>
+                <Input
+                  onChange={(e) => setAddTask({ ...addTask, title: e.target.value })}
+                  required
+                  id="Title"
+                  placeholder="Task Title"
+                  className="col-span-3"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label className="text-right">Description</Label>
+                <Input
+                  onChange={(e) => setAddTask({ ...addTask, description: e.target.value })}
+                  required
+                  id="Description"
+                  placeholder="Task Description"
+                  className="col-span-3"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label className="text-right">Priority</Label>
+                <Select
+                  required
+                  onValueChange={(value) => setAddTask({ ...addTask, priority: value })}
+                >
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Priority" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="Normal">Normal</SelectItem>
+                      <SelectItem value="Medium">Medium</SelectItem>
+                      <SelectItem value="High">High</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button onClick={(e) => handleSubmitTask(e)}>Submit</Button>
+            </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>
       <p className="mt-4 mb-4 text-sm">Tasks of the project:</p>
-      <div className="grid grid-cols-4 gap-4 auto-rows-auto">
+      <div className="grid grid-cols-3 gap-4 auto-rows-auto">
         {tasks?.map((task) => (
           <Task
             key={task.id}
