@@ -2,6 +2,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGr
 import { initializeApp } from "firebase/app";
 import { collection, getDocs, getFirestore } from "firebase/firestore";
 import Task from "./Task";
+
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,11 +31,11 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 export interface TaskData {
-  completed: boolean;
-  id: string;
-  description: string;
-  title: string;
-  priority: string;
+  completed?: boolean;
+  id?: string;
+  description?: string;
+  title?: string;
+  priority?: string;
 }
 
 export default function Dashboard() {
@@ -42,6 +43,11 @@ export default function Dashboard() {
   const [addTask, setAddTask] = useState<TaskData>();
 
   const db = getFirestore(app);
+
+  const handleSubmitTask = () => {
+    console.log(addTask);
+    setAddTask(undefined);
+  };
 
   useEffect(() => {
     const getTasks = async () => {
@@ -55,7 +61,6 @@ export default function Dashboard() {
         priority: task.data().priority, // add this line
       }));
 
-      console.log(tasks);
       setTasks(tasks);
     };
     getTasks();
@@ -88,6 +93,8 @@ export default function Dashboard() {
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label className="text-right">Title</Label>
                 <Input
+                  onChange={(e) => setAddTask({ ...addTask, title: e.target.value })}
+                  required
                   id="Title"
                   placeholder="Task Title"
                   className="col-span-3"
@@ -96,6 +103,8 @@ export default function Dashboard() {
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label className="text-right">Description</Label>
                 <Input
+                  onChange={(e) => setAddTask({ ...addTask, description: e.target.value })}
+                  required
                   id="Description"
                   placeholder="Task Description"
                   className="col-span-3"
@@ -103,7 +112,10 @@ export default function Dashboard() {
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label className="text-right">Priority</Label>
-                <Select>
+                <Select
+                  required
+                  onValueChange={(value) => setAddTask({ ...addTask, priority: value })}
+                >
                   <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Priority" />
                   </SelectTrigger>
@@ -118,7 +130,7 @@ export default function Dashboard() {
               </div>
             </div>
             <DialogFooter>
-              <Button type="submit">Add Task</Button>
+              <Button onClick={() => handleSubmitTask()}>Add Task</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
