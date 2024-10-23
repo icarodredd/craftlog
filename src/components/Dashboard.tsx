@@ -2,7 +2,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGr
 import { initializeApp } from "firebase/app";
 import { collection, getDocs, getFirestore } from "firebase/firestore";
 import Task from "./Task";
-
+import { z } from "zod";
+import { Form } from "@/components/ui/form";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +17,12 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+
+const formSchema = z.object({
+  username: z.string().min(2).max(50),
+});
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_APIKEY,
@@ -42,11 +49,17 @@ export default function Dashboard() {
   const [tasks, setTasks] = useState<TaskData[]>();
   const [addTask, setAddTask] = useState<TaskData>();
 
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      username: "",
+    },
+  });
+
   const db = getFirestore(app);
 
   const handleSubmitTask = () => {
     console.log(addTask);
-    setAddTask(undefined);
   };
 
   useEffect(() => {
@@ -85,53 +98,57 @@ export default function Dashboard() {
             <Button variant="outline">Add Task</Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Add Task</DialogTitle>
-              <DialogDescription>Make changes to your profile here. Click save when you're done.</DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label className="text-right">Title</Label>
-                <Input
-                  onChange={(e) => setAddTask({ ...addTask, title: e.target.value })}
-                  required
-                  id="Title"
-                  placeholder="Task Title"
-                  className="col-span-3"
-                />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label className="text-right">Description</Label>
-                <Input
-                  onChange={(e) => setAddTask({ ...addTask, description: e.target.value })}
-                  required
-                  id="Description"
-                  placeholder="Task Description"
-                  className="col-span-3"
-                />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label className="text-right">Priority</Label>
-                <Select
-                  required
-                  onValueChange={(value) => setAddTask({ ...addTask, priority: value })}
-                >
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Priority" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value="Normal">Normal</SelectItem>
-                      <SelectItem value="Medium">Medium</SelectItem>
-                      <SelectItem value="High">High</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <DialogFooter>
-              <Button onClick={() => handleSubmitTask()}>Add Task</Button>
-            </DialogFooter>
+            <Form {...form}>
+              <form className="space-y-8">
+                <DialogHeader>
+                  <DialogTitle>Add Task</DialogTitle>
+                  <DialogDescription>Add task here. Click submit when you're done.</DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label className="text-right">Title</Label>
+                    <Input
+                      onChange={(e) => setAddTask({ ...addTask, title: e.target.value })}
+                      required
+                      id="Title"
+                      placeholder="Task Title"
+                      className="col-span-3"
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label className="text-right">Description</Label>
+                    <Input
+                      onChange={(e) => setAddTask({ ...addTask, description: e.target.value })}
+                      required
+                      id="Description"
+                      placeholder="Task Description"
+                      className="col-span-3"
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label className="text-right">Priority</Label>
+                    <Select
+                      required
+                      onValueChange={(value) => setAddTask({ ...addTask, priority: value })}
+                    >
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Priority" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectItem value="Normal">Normal</SelectItem>
+                          <SelectItem value="Medium">Medium</SelectItem>
+                          <SelectItem value="High">High</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button onClick={() => handleSubmitTask()}>Submit</Button>
+                </DialogFooter>
+              </form>
+            </Form>
           </DialogContent>
         </Dialog>
       </div>
