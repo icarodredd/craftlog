@@ -1,4 +1,4 @@
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup } from "@/components/ui/select";
 import { initializeApp } from "firebase/app";
 import { collection, getDocs, getFirestore } from "firebase/firestore";
 import Task from "./Task";
@@ -39,6 +39,7 @@ export interface TaskData {
 
 export default function Dashboard() {
   const [tasks, setTasks] = useState<TaskData[]>();
+  const [addTask, setAddTask] = useState<TaskData>();
 
   const db = getFirestore(app);
 
@@ -85,24 +86,39 @@ export default function Dashboard() {
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label className="text-right">Name</Label>
+                <Label className="text-right">Title</Label>
                 <Input
-                  id="name"
-                  value="Pedro Duarte"
+                  id="Title"
+                  placeholder="Task Title"
                   className="col-span-3"
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label className="text-right">Username</Label>
+                <Label className="text-right">Description</Label>
                 <Input
-                  id="username"
-                  value="@peduarte"
+                  id="Description"
+                  placeholder="Task Description"
                   className="col-span-3"
                 />
               </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label className="text-right">Priority</Label>
+                <Select>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Priority" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="Normal">Normal</SelectItem>
+                      <SelectItem value="Medium">Medium</SelectItem>
+                      <SelectItem value="High">High</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             <DialogFooter>
-              <Button type="submit">Save changes</Button>
+              <Button type="submit">Add Task</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
