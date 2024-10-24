@@ -2,6 +2,7 @@ import { TaskData } from "./Dashboard";
 import { Button } from "./ui/button";
 import { Firestore, setDoc, doc, getDocs, collection } from "firebase/firestore";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "./ui/card";
+import EditTask from "./EditTask";
 
 export default function Task({
   task,
@@ -12,7 +13,7 @@ export default function Task({
   db: Firestore;
   setTasks: React.Dispatch<React.SetStateAction<TaskData[] | undefined>>;
 }) {
-  const handleClick = async () => {
+  const handleSubmitClick = async () => {
     if (task.completed) await setDoc(doc(db, "tasks", `${task.id}`), { ...task, completed: false });
     else await setDoc(doc(db, "tasks", `${task.id}`), { ...task, completed: true });
     const getTasks = async () => {
@@ -41,22 +42,27 @@ export default function Task({
         </CardDescription>
       </CardHeader>
       <CardContent className="h-auto">{task.description} </CardContent>
-      <CardFooter>
+      <CardFooter className="flex justify-between">
         {task.completed ? (
           <Button
-            onClick={() => handleClick()}
+            onClick={() => handleSubmitClick()}
             size={"sm"}
           >
             Mark as not completed
           </Button>
         ) : (
           <Button
-            onClick={() => handleClick()}
+            onClick={() => handleSubmitClick()}
             size={"sm"}
           >
             Complete Task
           </Button>
         )}
+        <EditTask
+          setTasks={setTasks}
+          task={task}
+          db={db}
+        />
       </CardFooter>
     </Card>
   );
