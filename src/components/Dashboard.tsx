@@ -40,6 +40,7 @@ export interface TaskData {
 export default function Dashboard() {
   const [tasks, setTasks] = useState<TaskData[]>();
   const [addTask, setAddTask] = useState<TaskData>();
+  const pollingInterval = 60000;
 
   const db = getFirestore(app);
 
@@ -52,21 +53,25 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    const getTasks = async () => {
-      const data = await getDocs(collection(db, "tasks"));
-      const tasks = data.docs.map((task) => ({
-        ...task.data(),
-        id: task.id,
-        completed: task.data().completed,
-        description: task.data().description,
-        title: task.data().title,
-        priority: task.data().priority,
-      }));
+    const interval = setInterval(() => {
+      const getTasks = async () => {
+        const data = await getDocs(collection(db, "tasks"));
+        const tasks = data.docs.map((task) => ({
+          ...task.data(),
+          id: task.id,
+          completed: task.data().completed,
+          description: task.data().description,
+          title: task.data().title,
+          priority: task.data().priority,
+        }));
 
-      setTasks(tasks);
-    };
-    getTasks();
-  }, []);
+        setTasks(tasks);
+      };
+      getTasks();
+    }, pollingInterval);
+
+    return () => clearInterval(interval);
+  });
 
   return (
     <section className="p-4 font-inter w-full">
