@@ -1,8 +1,8 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { HomeIcon, ArchiveIcon } from "@radix-ui/react-icons";
+import { HomeIcon } from "@radix-ui/react-icons";
 
-export default function Sidebar({ setPage }: { setPage: React.Dispatch<React.SetStateAction<string>> }) {
+export default function Sidebar() {
   return (
     <section className="h-screen w-60 font-inter">
       <div className="flex justify-center items-center gap-4 p-4">
@@ -14,20 +14,11 @@ export default function Sidebar({ setPage }: { setPage: React.Dispatch<React.Set
       </div>
       <div>
         <Button
-          onClick={() => setPage("dashboard")}
           className="w-full"
           variant="ghost"
         >
           <HomeIcon />
           Dashboard
-        </Button>
-        <Button
-          onClick={() => setPage("projects")}
-          className="w-full"
-          variant="ghost"
-        >
-          <ArchiveIcon />
-          Projects
         </Button>
       </div>
     </section>
