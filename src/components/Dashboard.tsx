@@ -57,10 +57,10 @@ export default function Dashboard() {
       const tasks = data.docs.map((task) => ({
         ...task.data(),
         id: task.id,
-        completed: task.data().completed, // add this line
-        description: task.data().description, // add this line
-        title: task.data().title, // add this line
-        priority: task.data().priority, // add this line
+        completed: task.data().completed,
+        description: task.data().description,
+        title: task.data().title,
+        priority: task.data().priority,
       }));
 
       setTasks(tasks);
@@ -141,6 +141,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-3 gap-4 auto-rows-auto">
         {tasks?.map((task) => (
           <Task
+            db={db}
             key={task.id}
             task={task}
           />
