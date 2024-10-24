@@ -38,40 +38,54 @@ export interface TaskData {
 }
 
 export default function Dashboard() {
+  const [submited, setSubmited] = useState(false);
   const [tasks, setTasks] = useState<TaskData[]>();
   const [addTask, setAddTask] = useState<TaskData>();
-  const pollingInterval = 60000;
 
   const db = getFirestore(app);
 
   const handleSubmitTask = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    setSubmited(true);
     e.preventDefault();
     await addDoc(collection(db, "tasks"), {
       ...addTask,
       completed: false,
     });
+
+    const getTasks = async () => {
+      const data = await getDocs(collection(db, "tasks"));
+      const tasks = data.docs.map((task) => ({
+        ...task.data(),
+        id: task.id,
+        completed: task.data().completed,
+        description: task.data().description,
+        title: task.data().title,
+        priority: task.data().priority,
+      }));
+
+      setTasks(tasks);
+    };
+    getTasks();
+
+    setInterval(() => setSubmited(false), 10000);
   };
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      const getTasks = async () => {
-        const data = await getDocs(collection(db, "tasks"));
-        const tasks = data.docs.map((task) => ({
-          ...task.data(),
-          id: task.id,
-          completed: task.data().completed,
-          description: task.data().description,
-          title: task.data().title,
-          priority: task.data().priority,
-        }));
+    const getTasks = async () => {
+      const data = await getDocs(collection(db, "tasks"));
+      const tasks = data.docs.map((task) => ({
+        ...task.data(),
+        id: task.id,
+        completed: task.data().completed,
+        description: task.data().description,
+        title: task.data().title,
+        priority: task.data().priority,
+      }));
 
-        setTasks(tasks);
-      };
-      getTasks();
-    }, pollingInterval);
-
-    return () => clearInterval(interval);
-  });
+      setTasks(tasks);
+    };
+    getTasks();
+  }, []);
 
   return (
     <section className="p-4 font-inter w-full">
@@ -139,6 +153,7 @@ export default function Dashboard() {
             <DialogFooter>
               <Button onClick={(e) => handleSubmitTask(e)}>Submit</Button>
             </DialogFooter>
+            {submited && <span className="text-right">Task added successfully.</span>}
           </DialogContent>
         </Dialog>
       </div>
@@ -146,6 +161,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-3 gap-4 auto-rows-auto">
         {tasks?.map((task) => (
           <Task
+            setTasks={setTasks}
             db={db}
             key={task.id}
             task={task}
