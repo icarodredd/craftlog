@@ -1,6 +1,7 @@
 import { TaskData } from "./Dashboard";
 import { Button } from "./ui/button";
-import { Firestore, setDoc, doc, getDocs, collection } from "firebase/firestore";
+import { TrashIcon } from "@radix-ui/react-icons";
+import { Firestore, setDoc, doc, getDocs, collection, deleteDoc } from "firebase/firestore";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "./ui/card";
 import EditTask from "./EditTask";
 
@@ -16,6 +17,25 @@ export default function Task({
   const handleSubmitClick = async () => {
     if (task.completed) await setDoc(doc(db, "tasks", `${task.id}`), { ...task, completed: false });
     else await setDoc(doc(db, "tasks", `${task.id}`), { ...task, completed: true });
+    const getTasks = async () => {
+      const data = await getDocs(collection(db, "tasks"));
+      const tasks = data.docs.map((task) => ({
+        ...task.data(),
+        id: task.id,
+        completed: task.data().completed,
+        description: task.data().description,
+        title: task.data().title,
+        priority: task.data().priority,
+      }));
+
+      setTasks(tasks);
+    };
+    getTasks();
+  };
+
+  const handleDelete = async () => {
+    await deleteDoc(doc(db, "tasks", `${task.id}`));
+
     const getTasks = async () => {
       const data = await getDocs(collection(db, "tasks"));
       const tasks = data.docs.map((task) => ({
@@ -63,6 +83,12 @@ export default function Task({
           task={task}
           db={db}
         />
+        <Button
+          onClick={() => handleDelete()}
+          variant={"destructive"}
+        >
+          <TrashIcon />
+        </Button>
       </CardFooter>
     </Card>
   );
