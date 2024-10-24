@@ -67,7 +67,7 @@ export default function Dashboard() {
     };
     getTasks();
 
-    const interval = setInterval(() => setSubmited(false), 10000);
+    const interval = setInterval(() => setSubmited(false), 5000);
     clearInterval(interval);
   };
 

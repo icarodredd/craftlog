@@ -15,7 +15,15 @@ import { useState } from "react";
 import { TaskData } from "./Dashboard";
 import { collection, doc, Firestore, getDocs, setDoc } from "firebase/firestore";
 
-export default function EditTask({ task, db, setTasks }: { task: TaskData; db: Firestore, setTasks:React.Dispatch<React.SetStateAction<TaskData[] | undefined>> }) {
+export default function EditTask({
+  task,
+  db,
+  setTasks,
+}: {
+  task: TaskData;
+  db: Firestore;
+  setTasks: React.Dispatch<React.SetStateAction<TaskData[] | undefined>>;
+}) {
   const [editTask, setEditTask] = useState<TaskData>();
   const [submited, setSubmited] = useState(false);
 
@@ -25,7 +33,7 @@ export default function EditTask({ task, db, setTasks }: { task: TaskData; db: F
     await setDoc(doc(db, "tasks", `${task.id}`), editTask);
 
     setSubmited(true);
-   
+
     const getTasks = async () => {
       const data = await getDocs(collection(db, "tasks"));
       const tasks = data.docs.map((task) => ({
@@ -40,10 +48,9 @@ export default function EditTask({ task, db, setTasks }: { task: TaskData; db: F
       setTasks(tasks);
     };
     getTasks();
-    
-    const interval = setInterval(() => setSubmited(false), 10000);
-    clearInterval(interval);
 
+    const interval = setInterval(() => setSubmited(false), 5000);
+    return () => clearInterval(interval);
   };
 
   return (
@@ -99,7 +106,7 @@ export default function EditTask({ task, db, setTasks }: { task: TaskData; db: F
         <DialogFooter>
           <Button onClick={(e) => handleClick(e)}>Submit</Button>
         </DialogFooter>
-        {submited && <span className="text-right">Task added successfully.</span>}
+        {submited && <span className="text-right">Task edited successfully.</span>}
       </DialogContent>
     </Dialog>
   );
