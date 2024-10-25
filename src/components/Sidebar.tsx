@@ -5,7 +5,7 @@ import logo from "@/assets/craftlog.png";
 
 export default function Sidebar() {
   return (
-    <section className="h-screen w-60 font-inter">
+    <section className="h-screen w-40 font-inter max-lg:h-min max-md:flex max-lg:items-center max-lg:justify-between max-md:w-screen">
       <div className="flex justify-center items-center gap-4 p-4">
         <Avatar>
           <AvatarImage src={logo} />

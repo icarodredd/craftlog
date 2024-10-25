@@ -159,7 +159,7 @@ export default function Dashboard() {
         </Dialog>
       </div>
       <p className="mt-4 mb-4 text-sm">Tasks of the project:</p>
-      <div className="grid grid-cols-3 gap-4 auto-rows-auto">
+      <div className="grid grid-cols-3 gap-4 auto-rows-auto max-xl:grid-cols-2 max-lg:grid-cols-1">
         {tasks?.map((task) => (
           <Task
             setTasks={setTasks}

@@ -53,7 +53,7 @@ export default function Task({
   };
 
   return (
-    <Card className="text-clip overflow-hidden break-all">
+    <Card className="text-clip overflow-hidden break-all w-min">
       <CardHeader>
         <CardTitle>{task.title}</CardTitle>
         <CardDescription>
